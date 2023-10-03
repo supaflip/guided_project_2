@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-const url = "mongodb://localhost:2707";
+const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 const db_name = "swapi";
 
@@ -9,8 +9,16 @@ module.exports.call = async function call(operation, params, callback) {
 
     switch(operation.toLowerCase()) {
         case 'get_all':
-            callback({ body: [params.collection]});
-            break;
+            try{
+                const collection = db.collection(params.collection)
+                const docs = await collection.find({}).toArray();
+                callback({ body: docs, status: 200 })
+            } catch (e) {
+                console.log(e);
+                callback({ body: false, status: 404});
+            } finally {
+                break;
+            }
         
         case 'get_one':
             callback({ body: [params.collection, params.id]});

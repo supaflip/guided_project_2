@@ -7,11 +7,11 @@ app.use(bodyParser.json());
 
 function queryDAO(operation, req, res) {
     dao.call(operation, req.params, (result) => {
-        if (result.body !== undefined) {
+        if (result.body && result.status != 404) {
             console.log(result.body);
             res.send(result.body);
         } else {
-            res.statusCode = 404;
+            res.sendStatus(404);
             res.end;
         };
     }); 
