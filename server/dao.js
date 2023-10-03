@@ -21,12 +21,30 @@ module.exports.call = async function call(operation, params, callback) {
             }
         
         case 'get_one':
-            callback({ body: [params.collection, params.id]});
-            break;
+            try{
+                const collection = db.collection(params.collection)
+                const doc = await collection.findOne({id: +params.id});
+                callback({ body: doc, status: 200 })
+            } catch (e) {
+                console.log(e);
+                callback({ body: false, status: 404});
+            } finally {
+                break;
+            }
+
+            
 
         case 'get_attr':
-            callback({ body: [params.collection, params.id, params.attr]})
-            break;
+            try{
+                const collection = db.collection(params.collection)
+                const doc = await collection.findOne({id: +params.id});
+                callback({ body: doc[params.attr], status: 200 })
+            } catch (e) {
+                console.log(e);
+                callback({ body: false, status: 404});
+            } finally {
+                break;
+            }
 
         default:
             callback({ status: "requested data not found", body: params });
@@ -34,7 +52,7 @@ module.exports.call = async function call(operation, params, callback) {
     };
 
     console.log('call complete: ' + operation);
-    client.close();
+    // client.close();
     return 'call complete';
 };
 
